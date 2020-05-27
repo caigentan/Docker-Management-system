@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+    <title>创建容器</title>
+    <link rel="icon" href="favicon.ico" type="image/ico">
+
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <link href="/css/animate.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/toastr.js/2.1.4/toastr.min.css" rel="stylesheet">
+    <script src="/webjars/jquery/3.4.1/jquery.js"></script>
+    <script type="text/javascript" src="/js/lightyear.js"></script>
+    <script type="text/javascript" src="/customjs/custom.js"></script>
+    <script src="https://cdn.bootcss.com/toastr.js/2.1.4/toastr.min.js"></script>
+    <script>
+        $(function () {
+            $("#submitCreate").click(function () {
+                lightyear.notify('已提交，请勿反复提交~', 'success', 100);
+                var createJson=[];
+                var createParam = {};
+                createParam["imageid"]=$("#imageid").val()
+                createParam["containername"]=$("#newContainerName").val();
+                if($('#autoport').prop('checked')){
+                    createParam["auto"]="true";
+                }else{
+                    createParam["public-port"]=$("#public-port").val();
+                    createParam["docker-port"]=$("#docker-port").val();
+                    if($('#udp').prop('checked')){
+                        createParam["connmode"]="udp";
+                    }else{
+                        createParam["connmode"]="tcp";
+                    }
+                };
+                if($('#proset').prop('checked')){
+                    var proset = {};
+                    proset["memory"]=$("#memory").val();
+                    proset["cpu"]=$("#cpu").val();
+                    var networkset = {};
+                    var mode="bridge";
+                    mode=$("#networdmode").find("option:selected").text();
+                    networkset["mode"]=mode;
+                    if("container"==mode){
+                        networkset["bindcontainer"]=$("#bindcontainer").val();
+                    }
+                    proset["networkset"]=networkset;
+                    proset["entrance"]=$("#entrance").val();
+                    proset["addon"]=$("#addon").val();
+                    proset["hostfile"]=$("#hostfile").val();
+                    proset["containerfile"]=$("#containerfile").val();
+                    createParam["proset"]=proset;
+                }
+                createJson.push(createParam);
+                $.ajax({
+                    url:"/createNewContainerByImage",
+                    type:"post",
+                    traditional: true,
+                    data:{
+                        createJson:JSON.stringify(createJson)
+                    },
+                    dataType:"text",
+                    success:function () {
+                        lightyear.notify('创建成功，请前往容器列表查看~', 'success', 100);
+                    },
+                    error:function () {
+                        lightyear.notify('服务器错误，请重试~', 'danger', 100);
+                    }
+                })
+                console.log(createJson);
+            });
+            $("#addNewPorts").click(function () {
+                $("#manualPort").css("display", "block");
+            });
+            $("#networdmode").change(function () {
+                var mode=$(this).find("option:selected").text();
+                if("container"==mode){
+                    $("#network-container").css("display", "block");
+                }else{
+                    $("#network-container").css("display", "none");
+                }
+            });
+            $("[data-toggle='tooltip']").tooltip();
+        });
+    </script>
+</head>
+
+<body data-logobg="color_8" data-sidebarbg="color_8">
+<div class="lyear-layout-web">
+    <div class="lyear-layout-container">
+        <!--左侧导航-->
+        <div th:replace="common/bar::Lsidebar"></div>
+        <!--End 左侧导航-->
+        <!--头部信息-->
+        <div th:replace="common/bar::topbar"></div>
+        <!--End 头部信息-->
+        <!--页面主要内容-->
+        <main class="lyear-layout-content">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header"><h4>基本信息</h4></div>
+                    <div class="card-body">
+                        <div class="input-group m-b-10">
+                            <span class="input-group-addon" id="basic-addon1">镜像id</span>
+                            <input type="text" name="example-disabled-input" id="imageid"
+                                   class="form-control" th:value="${imageid}" th:if="${imageid}!=null">
+                        </div>
+                        <div>
+                            <p style="margin-top:20px;"><font size="1">基本配置(必填)</font></p>
+                            <hr style="border-top:1px dashed #987cb9;" width="100%" color="#987cb9" size=1>
+                        </div>
+                        <div class="form-group">
+                            <label for="newContainerName" style="font-size: 15px">容器名称</label>
+                            <input class="form-control" type="text" id="newContainerName" name="example-input-normal"
+                                   placeholder="e.g：MyConainer">
+                        </div>
+
+                        <div>
+                            <p style="margin-top:20px;"><font size="1">端口映射</font></p>
+                            <hr style="border-top:1px dashed #987cb9;" width="100%" color="#987cb9" size=1>
+                        </div>
+                        <div class="form-group row m-b-10">
+                            <div class="col-xs-6">
+                                <label style="margin-right:40px;font-size: 15px">自动为创建的容器分配端口 <a href="#"
+                                                                                                 data-toggle="tooltip"
+                                                                                                 title="如果开启此项，系统将会自动为你分配一个可用的端口，你不会即时知道被分配的端口，但你可以通过容器列表进行查看，如果你不清楚你的镜像要使用哪个端口才有效，请敬慎使用此项">
+                                    <i class="mdi mdi-tag-multiple"></i>
+                                </a>
+                                </label>
+
+                                <label class="lyear-switch switch-success switch-light">
+                                    <input type="checkbox" id="autoport" checked="">
+                                    <span></span>
+                                </label>
+                            </div>
+                        </div>
+                        <!--手动指定端口start-->
+                        <div class="form-group row">
+                            <div class="col-xs-6">
+                                <label style="margin-right:40px;font-size: 15px">手动指定端口
+                                    <a href="#" data-toggle="tooltip" title="">
+                                        <i class="mdi mdi-tag-multiple"></i>
+                                    </a>
+                                </label>
+                                <label><span style="cursor:pointer" id="addNewPorts"><i
+                                        class="mdi mdi-new-box"></i>添加新的端口映射</span></label>
+                            </div>
+                        </div>
+                        <div class="form-group row" id="manualPort" style="display:none">
+                            <div class="col-xs-4">
+                                <div class="input-group">
+                                    <span class="input-group-addon">公共端口</span>
+                                    <input type="text" class="form-control" id="public-port" placeholder="e.g:8080">
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="input-group">
+                                    <span class="input-group-addon">映射端口</span>
+                                    <input type="text" class="form-control" id="docker-port" placeholder="e.g:8888">
+                                </div>
+                            </div>
+                            <div class="btn-group btn-group-toggle col-xs-2" data-toggle="buttons">
+                                <label class="btn btn-primary">
+                                    <input type="radio" name="options" id="tcp" autocomplete="off">
+                                    TCP
+                                </label>
+                                <label class="btn btn-primary">
+                                    <input type="radio" name="options" id="udp" autocomplete="off">
+                                    UDP</label>
+                            </div>
+                        </div>
+                        <!--手动指定端口end-->
+                        <div>
+                            <p style="margin-top:20px;"><font size="1">只差一步</font></p>
+                            <hr style="border-top:1px dashed #987cb9;" width="100%" color="#987cb9" size=1>
+                        </div>
+                        <button class="btn btn-label btn-primary" id="submitCreate"><label><i
+                                class="mdi mdi-checkbox-marked-circle-outline"></i></label> 确认提交
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="card form-group">
+                    <div class="card-header col-xs-6"><label style="margin-right:40px">高级</label>
+                        <label class="lyear-switch switch-success switch-light">
+                            <input type="checkbox" id="proset" checked="">
+                            <span></span>
+                        </label>
+                    </div>
+                    <div class="card-body">
+                        <div>
+                            <p style="margin-top:20px;"><font size="1">资源配置</font></p>
+                            <hr style="border-top:1px dashed #987cb9;" width="100%" color="#987cb9" size=1>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-xs-4">
+                                <div class="input-group">
+                                    <span class="input-group-addon">内存</span>
+                                    <input type="text" class="form-control" id="memory" aria-describedby="basic-addon3">
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="input-group">
+                                    <span class="input-group-addon">cpu(%)</span>
+                                    <input type="text" class="form-control" id="cpu" aria-describedby="basic-addon3">
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <select class="form-control" id="networdmode" name="networdmode" size="1">
+                                    <option value="1">bridge</option>
+                                    <option value="2">container</option>
+                                    <option value="3">none</option>
+                                    <option value="4">host</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-12" id="network-container" style="display:none">
+                                <div class="input-group">
+                                    <span class="input-group-addon">绑定容器</span>
+                                    <input type="text" class="form-control" id="bindcontainer" >
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <p style="margin-top:20px;"><font size="1">额外命令</font></p>
+                            <hr style="border-top:1px dashed #987cb9;" width="100%" color="#987cb9" size=1>
+                        </div>
+                        <div class="form-group">
+                            <label for="othercmd" style="font-size: 15px">命令</label>
+                            <input class="form-control" type="text" id="othercmd" name="example-input-normal"
+                                   placeholder="e.g:/user/bin/nginx -tc /mynginx.config">
+                        </div>
+                        <div class="form-group">
+                            <label for="entrance" style="font-size: 15px">入口</label>
+                            <input class="form-control" type="text" id="entrance" name="example-input-normal"
+                                   placeholder="e.g:/bin/sh -c">
+                        </div>
+                        <div class="form-group">
+                            <label for="workfile" style="font-size: 15px">工作目录</label>
+                            <input class="form-control" type="text" id="workfile" name="example-input-normal"
+                                   placeholder="e.g:/myapp">
+                        </div>
+                        <div class="form-group">
+                            <label for="addon" style="font-size: 15px">附加</label>
+                            <input class="form-control" type="text" id="addon" name="example-input-normal"
+                                   placeholder="e.g: while true;do echo hello world;sleep 2;done">
+                        </div>
+                        <div>
+                            <p style="margin-top:20px;"><font size="1">动作</font></p>
+                            <hr style="border-top:1px dashed #987cb9;" width="100%" color="#987cb9" size=1>
+                        </div>
+                        <div class="form-group row m-b-10">
+                            <div class="col-xs-6">
+                                <label style="margin-right:40px;font-size: 15px">自动销毁<a href="#" data-toggle="tooltip"
+                                                                                        title="当容器停止时，可以自动销毁容器，这对于只需一次性使用的很有效">
+                                    <i class="mdi mdi-tag-multiple"></i>
+                                </a>
+                                </label>
+                                <label class="lyear-switch switch-success switch-light">
+                                    <input type="checkbox" id="autorm">
+                                    <span></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div>
+                            <p style="margin-top:20px;"><font size="1">卷</font></p>
+                            <hr style="border-top:1px dashed #987cb9;" width="100%" color="#987cb9" size=1>
+                        </div>
+                        <div class="form-group row m-b-10">
+                            <div class="col-xs-6">
+                                <label style="margin-right:40px;font-size: 15px">卷绑定<a href="#" data-toggle="tooltip"
+                                                                                       title="适用于持久化保存，若文件不存在，将会自动创建">
+                                    <i class="mdi mdi-tag-multiple"></i>
+                                </a>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group  row m-b-12">
+                            <div class="col-xs-4">
+                                <div class="input-group">
+                                    <span class="input-group-addon" id="hostfile">主机文件</span>
+                                    <input type="text" class="form-control" id="host-url"
+                                           aria-describedby="basic-addon3">
+                                </div>
+
+                            </div>
+                            <div class="col-xs-2">
+                                <a href="#" data-toggle="tooltip"
+                                   title="用于将主机文件与容器文件绑定便于持久化">
+                                    <i class="mdi mdi-tag-multiple"></i>
+                                </a>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="input-group">
+                                    <span class="input-group-addon" id="containerfile">映射容器文件</span>
+                                    <input type="text" class="form-control" id="docker-url"
+                                           aria-describedby="basic-addon3">
+                                </div>
+                            </div>
+                            <div class="col-xs-2">
+                                <a href="#" data-toggle="tooltip"
+                                   title="若您不清楚如何操作，请查询相关文档或不进行此操作，这没什么大不了">
+                                    <i class="mdi mdi-tag-multiple"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <!--End 页面主要内容-->
+    </div>
+</div>
+
+<script type="text/javascript" src="/js/bootstrap-notify.min.js"></script>
+<!--这个导致消息通知不弹<script type="text/javascript" src="js/jquery.min.js"></script>-->
+<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/js/perfect-scrollbar.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+</body>
+</html>

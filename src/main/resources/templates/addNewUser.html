@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>用户添加</title>
+    <link rel="icon" href="favicon.ico" type="image/ico">
+
+    <meta name="author" content="yinqi">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body data-logobg="color_8" data-sidebarbg="color_8">
+<div class="lyear-layout-web">
+    <div class="lyear-layout-container">
+        <!--左侧导航-->
+        <div th:replace="common/bar::Lsidebar"></div>
+        <!--End 左侧导航-->
+        <!--头部信息-->
+        <div th:replace="common/bar::topbar"></div>
+        <!--End 头部信息-->
+
+        <!--页面主要内容-->
+        <main class="lyear-layout-content">
+
+            <div class="container-fluid">
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-header"><h4>添加用户</h4></div>
+                            <div class="card-body">
+
+                                <form action="/submitAdd" method="post">
+                                    <div class="form-group">
+                                        <label >用户名称</label>
+                                        <input class="form-control" type="text" name="userName" placeholder="用户名称">
+                                    </div>
+                                    <div class="form-group">
+                                        <label >用户密码</label>
+                                        <input id="firstpd" class="form-control" type="password" placeholder="用户密码">
+                                    </div>
+                                    <div class="form-group">
+                                        <label >确认密码</label>
+                                        <input id="confirmpd" class="form-control" type="password" name="confirmPassword" placeholder="确认密码">
+                                    </div>
+                                    <div class="form-group">
+                                        <label >用户级别</label>
+                                        <select class="form-control" id="example-select" name="role" size="1">
+                                            <option value="2">普通用户</option>
+                                            <option value="1">管理员</option>
+                                        </select>
+
+                                    </div>
+                                    <div class="form-group" style="text-align: center;">
+                                        <input type="submit" name="submit" class="btn btn-primary">
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </main>
+        <!--End 页面主要内容-->
+    </div>
+</div>
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/perfect-scrollbar.min.js"></script>
+<script type="text/javascript" src="js/main.js"></script>
+
+<script type="text/javascript" src="js/chosen.jquery.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $("#confirmpd").blur(function () {
+            if($("#confirmpd").val()!=$("#firstpd").val()){
+                alert("请输入相同密码")
+            }
+        })
+    })
+</script>
+</body>
+</html>

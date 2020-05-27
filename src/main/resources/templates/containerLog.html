@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+    <title>容器日志</title>
+    <link rel="icon" href="favicon.ico" type="image/ico">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <link href="/css/animate.css" rel="stylesheet">
+    <script src="/webjars/jquery/3.4.1/jquery.js"></script>
+    <script type="text/javascript" src="/js/lightyear.js"></script>
+    <script type="text/javascript" src="/js/bootstrap-notify.min.js"></script>
+    <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/js/perfect-scrollbar.min.js"></script>
+    <script type="text/javascript" src="/js/main.js"></script>
+</head>
+
+<body data-logobg="color_8" data-sidebarbg="color_8">
+<div class="lyear-layout-web">
+    <div class="lyear-layout-container">
+        <!--左侧导航-->
+        <div th:replace="common/bar::Lsidebar"></div>
+        <!--End 左侧导航-->
+        <!--头部信息-->
+        <div th:replace="common/bar::topbar"></div>
+        <!--End 头部信息-->
+
+        <!--页面主要内容-->
+        <main class="lyear-layout-content">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header"><h4>日志信息</h4></div>
+                    <div class="card-body">
+                        <div class="form-group row m-b-10">
+                            <div id="result-list" class="input-group-text bg-lightest p-10" style="height:400px;overflow-y:auto;overflow-x: auto">
+                                <p th:each="log:${logList}" th:text="${log}"></p>
+
+                            </div>
+                        </div>
+                        <br>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <!--End 页面主要内容-->
+    </div>
+</div>
+
+</body>
+</html>

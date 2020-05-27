@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <link href="/css/animate.css" rel="stylesheet">
+    <!--对话框-->
+    <link rel="stylesheet" href="js/jconfirm/jquery-confirm.min.css">
+    <script src="/webjars/jquery/3.4.1/jquery.js"></script>
+    <script type="text/javascript" src="/js/lightyear.js"></script>
+    <script type="text/javascript" src="/customjs/custom.js"></script>
+    <script>
+        $(function(){
+            var url = "/getAllContainerList";
+            $("#aclist").load(url);
+
+            $(document).on('click',"a[class='startC']", function () {
+                lightyear.notify('正在启动，请等待~~~', 'success', 100);
+                $.ajax({
+                    url: "/startC",
+                    type: "post",
+                    data:{
+                        id:$(this).parent().siblings("input").val()
+                    },
+                    dataType:"text",
+                    success:function (data) {
+                        lightyear.notify("启动成功","success",100);
+                        var url = "/getAllContainerList";
+                        $("#aclist").load(url);
+                    },
+                    error:function (data) {
+                        lightyear.notify("启动失败~请重试","danger",100);
+                    }
+                })
+            })
+
+            $(document).on('click',"a[class='removeC']", function () {
+
+                var containerId = $(this).parent().siblings("input").val();
+                $.alert({
+                    title: '警告',
+                    content: '确定删除容器<strong>'
+                        + $(this).parent().siblings("input").next().val()
+                        +'?</strong><br><em>此过程不可逆</em>',
+                    buttons: {
+                        confirm: {
+                            text: '确认',
+                            btnClass: 'btn-primary',
+                            action: function(){
+                                lightyear.notify('正在删除，请等待~~~', 'success', 100);
+                                $.ajax({
+                                    url: "/removeC",
+                                    type: "post",
+                                    data: {
+                                        containerId: containerId
+                                    },
+                                    dataType:"text",
+                                    success:function (data) {
+                                        lightyear.notify('删除成功', 'success', 100);
+                                        var url = "/getAllContainerList";
+                                        $("#aclist").load(url);
+                                    },
+                                    error:function (data) {
+                                        lightyear.notify('删除失败，请尝试重试', 'danger', 100);
+                                    }
+                                })
+                            }
+                        },
+                        cancel: {
+                            text: '取消'
+                        }
+                    }
+                });
+            })
+
+            $(document).on('click',"a[class='stopC']", function () {
+
+                var containerId = $(this).parent().siblings("input").val();
+
+                $.alert({
+                    title: '警告',
+                    content: '<p style="text-align: center;">确定停止容器<strong>'
+                        + $(this).parent().siblings("input").next().val()
+                        +'?</strong><br><em>使用此环境的其他环境也会立即终止！</em></p>',
+                    buttons: {
+                        confirm: {
+                            text: '确认',
+                            btnClass: 'btn-primary',
+                            action: function(){
+                                lightyear.notify('正在停止，请等待~~~', 'success', 100);
+                                $.ajax({
+                                    url: "/stopC",
+                                    type: "post",
+                                    data: {
+                                        containerId: containerId
+                                    },
+                                    dataType:"text",
+                                    success:function (data) {
+                                        lightyear.notify('停止成功', 'success', 100);
+                                        var url = "/getAllContainerList";
+                                        $("#aclist").load(url);
+                                    },
+                                    error:function (data) {
+                                        lightyear.notify('停止失败，请尝试重试', 'danger', 100);
+                                    }
+                                })
+                            }
+                        },
+                        cancel: {
+                            text: '取消'
+                        }
+                    }
+                });
+            })
+        })
+    </script>
+</head>
+<!--body内设置为主题色-->
+<body data-logobg="color_8" data-sidebarbg="color_8">
+<div class="lyear-layout-web">
+    <div class="lyear-layout-container">
+        <!--左侧导航-->
+        <div th:replace="common/bar::Lsidebar"></div>
+        <!--End 左侧导航-->
+        <!--头部信息-->
+        <div th:replace="common/bar::topbar"></div>
+        <!--End 头部信息-->
+        <!--页面主要内容-->
+        <main class="lyear-layout-content">
+
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header"><h4>容器列表</h4></div>
+                    <div class="card-body">
+
+                        <ul class="card-actions"><button id="refreshibtn"><i class="mdi mdi-refresh"></i></button></ul>
+                        <div class="divider"></div>
+                        <div class="table-responsive" id="aclist">
+                            <table class="table table-bordered" th:fragment="aclist">
+                                <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>容器名称</th>
+                                    <th>容器ID</th>
+                                    <th>启动镜像</th>
+                                    <th>创建时间</th>
+                                    <th>状态</th>
+                                    <th>端口</th>
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="container:${allContainers}">
+                                    <td th:text="${containerStat.index+1}">1</td>
+                                    <td><a th:href="'/container/'+${container.getContainerId()}"
+                                           th:text="${container.getContainerName()}"></a></td>
+                                    <td th:text="${container.getContainerId()}">0</td>
+                                    <td th:text="${container.getImageName()}">0</td>
+                                    <td th:text="${container.getCreateTimel()}">0</td>
+                                    <td th:text="${container.getStatus()}"></td>
+                                    <td><span class="label label-success"
+                                              th:text="${container.getContainerPort()}">0</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <input type="hidden" th:value="${container.getContainerId()}">
+                                            <input type="hidden" th:value="${container.getContainerName()}">
+                                            <span data-toggle="tooltip" data-placement="top" title="" data-original-title="详细信息"><a th:href="'/container/'+${container.getContainerId()}+'/inspect'"><i class="mdi mdi-information"></i></a></span>
+                                            <span data-toggle="tooltip" data-placement="top" title="" data-original-title="启动容器"><a class="startC" href="javascript:;"><i class="mdi mdi-checkbox-marked-circle-outline"></i></a></span>
+                                            <span data-toggle="tooltip" data-placement="top" title="" data-original-title="删除容器"><a class="removeC" href="javascript:;"><i class="mdi mdi-window-close"></i></a></span>
+                                            <!--<span><a class="removeC" th:href="'/removeC?id='+${container.getContainerId()}"><i class="mdi mdi-window-close"></i></a></span>-->
+                                            <span data-toggle="tooltip" data-placement="top" title="" data-original-title="停止容器"><a class="stopC" href="javascript:;"><i class="mdi mdi-stop-circle-outline"></i></a></span>
+                                            <span data-toggle="tooltip" data-placement="top" title="" data-original-title="容器日志"><a th:href="'/containerLog/'+${container.getContainerId()}"><i class="mdi mdi-note-text"></i></a></span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+<script type="text/javascript" src="/js/bootstrap-notify.min.js"></script>
+<script src="/js/jconfirm/jquery-confirm.min.js"></script>
+<!--这个导致消息通知不弹<script type="text/javascript" src="js/jquery.min.js"></script>-->
+<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/js/perfect-scrollbar.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+    <title>容器信息</title>
+    <meta name="author" content="caigen">
+    <link href="/css/json-viewer/json-viewer.css" type="text/css" rel="stylesheet" />
+    <link rel="icon" href="favicon.ico" type="image/ico">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <link href="/css/animate.css" rel="stylesheet">
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/perfect-scrollbar.min.js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
+    <script src="/webjars/jquery/3.4.1/jquery.js"></script>
+    <script type="text/javascript" src="/js/lightyear.js"></script>
+    <!--<script src="https://libs.baidu.com/jquery/1.10.2/jquery.min.js"></script>-->
+    <script src="/js/json-viewer/jquery.json-viewer.js"></script>
+    <script type="text/javascript">
+        $(function() {
+            $('#btn-json-viewer').click(function() {
+                try {
+                    var input = eval('(' + $('#json-info').val() + ')');
+                }
+                catch (error) {
+                    return alert("Cannot eval JSON: " + error);
+                }
+                var options = {
+                    collapsed: $('#collapsed').is(':checked'),
+                    withQuotes: $('#with-quotes').is(':checked')
+                };
+                $('#json-renderer').jsonViewer(input, options);
+            });
+
+            $('#btn-json-viewer').click();
+        });
+    </script>
+    <style>
+        body{background-color: #F7F7F7}
+    </style>
+</head>
+
+<body data-logobg="color_8" data-sidebarbg="color_8">
+<div class="lyear-layout-web">
+    <div class="lyear-layout-container">
+        <!--左侧导航-->
+        <div th:replace="common/bar::Lsidebar"></div>
+        <!--End 左侧导航-->
+        <!--头部信息-->
+        <div th:replace="common/bar::topbar"></div>
+        <!--End 头部信息-->
+
+        <!--页面主要内容-->
+        <main class="lyear-layout-content">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header"><h4>详情</h4></div>
+                    <div class="card-body">
+                        <label class="lyear-checkbox checkbox-inline checkbox-primary">
+                            <input type="checkbox" id="collapsed">
+                            <span>收缩所有的节点</span>
+                        </label>
+                        <label class="lyear-checkbox checkbox-inline checkbox-primary">
+                            <input type="checkbox" id="with-quotes">
+                            <span>为Key添加双引号</span>
+                        </label>
+                        <div class="form-group inline" style="padding: 1em 0;">
+                            <button id="btn-json-viewer" class="btn btn-info inline" title="run jsonViewer()">刷新(Re)</button>
+                        </div>
+                        <div class="card-body">
+                            <div style="margin-top: 1em;">
+                                <div>
+                                    <pre id="json-renderer"></pre>
+                                    <input id="json-info" style="display: none" th:value="${jsoninfo}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <!--End 页面主要内容-->
+    </div>
+</div>
+<script type="text/javascript" src="/js/bootstrap-notify.min.js"></script>
+<!--这个导致消息通知不弹<script type="text/javascript" src="js/jquery.min.js"></script>-->
+<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/js/perfect-scrollbar.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+</body>
+</html>

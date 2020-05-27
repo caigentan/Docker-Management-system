@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>镜像列表</title>
+    <link rel="icon" href="favicon.ico" type="image/ico">
+    <meta name="author" content="yinqi">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <link href="/css/animate.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/toastr.js/2.1.4/toastr.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="js/jconfirm/jquery-confirm.min.css">
+    <script src="/webjars/jquery/3.4.1/jquery.js"></script>
+    <script type="text/javascript" src="/js/lightyear.js"></script>
+    <script type="text/javascript" src="/customjs/custom.js"></script>
+    <script src="https://cdn.bootcss.com/toastr.js/2.1.4/toastr.min.js"></script>
+    <script>
+        $(function () {
+           var url="/refreshIList";
+           $("#ilist").load(url);
+
+            $('#ilist').on('click','#check-all',function () {
+                $("input[type='checkbox']").prop('checked', $(this).prop("checked"));
+            });
+
+            $('#refreshibtn').click(function () {
+                $("#ilist").load(url);
+            })
+
+            /*$('#startIbtn').click(function () {
+                var checkimage = [];
+                $("input[name='ids[]']:checked").each(function (i) {
+                    checkimage[i] = $(this).parent().parent()
+                        .next().next().next().text();
+                })
+
+                $.ajax({
+                    url: "/startimage",
+                    type: "post",
+                    traditional: true,
+                    data:{
+                        checkimage: checkimage
+                    },
+                    dataType: "text",
+                    success:function (data) {
+                        lightyear.notify('镜像启动成功~', 'success', 100);
+
+                    },
+                    error:function () {
+                        lightyear.notify('服务器响应超时，请重试~', 'danger', 100);
+                    }
+                })
+            })*/
+
+            $(document).on('click',"a[class='removeI']", function () {
+
+                var imageId = $(this).parent().siblings("input").val();
+                $.alert({
+                    title: '警告',
+                    content: '确定删除镜像<strong>'
+                        + $(this).parent().siblings("input").next().val()
+                        +'?</strong><br><em>此过程不可逆</em>',
+                    buttons: {
+                        confirm: {
+                            text: '确认',
+                            btnClass: 'btn-primary',
+                            action: function(){
+                                lightyear.notify('正在删除，在出现提示前请勿反复删除', 'success', 100);
+                                $.ajax({
+                                    url: "/removeI",
+                                    type: "post",
+                                    data: {
+                                        imageId: imageId
+                                    },
+                                    dataType:"text",
+                                    success:function (data) {
+                                        lightyear.notify('删除成功', 'success', 100);
+                                        var url="/refreshIList";
+                                        $("#ilist").load(url);
+                                    },
+                                    error:function (data) {
+
+                                        lightyear.notify('删除失败，请尝试重试', 'danger', 100);
+                                    }
+                                })
+                            }
+                        },
+                        cancel: {
+                            text: '取消'
+                        }
+                    }
+                });
+            })
+
+        });
+    </script>
+</head>
+
+<body data-logobg="color_8" data-sidebarbg="color_8" data-headerbg="color_8">
+<div class="lyear-layout-web">
+    <div class="lyear-layout-container">
+        <!--左侧导航-->
+        <div th:replace="common/bar::Lsidebar"></div>
+        <!--End 左侧导航-->
+        <!--头部信息-->
+        <div th:replace="common/bar::topbar"></div>
+        <!--End 头部信息-->
+        <!--页面主要内容-->
+        <main class="lyear-layout-content">
+
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header"><h4>下载镜像</h4></div>
+                    <div class="card-body">
+                        <form method="post">
+                            <div class="form-group">
+                                <div class="input-group m-b-10">
+                                    <span class="input-group-addon" id="basic-addon1">下载源</span>
+                                    <select class="form-control" id="example-select" name="example-select" size="1">
+                                        <option value="0">HubDocker</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="input-group m-b-10">
+                                <span class="input-group-addon">镜像名</span>
+                                <input type="text" id="searchContext" class="form-control" placeholder="eg:hello-world:latest" aria-describedby="basic-addon1">
+                            </div>
+                            <button class="btn btn-label btn-primary" id="dirdown"><label><i class="mdi mdi-checkbox-marked-circle-outline"></i></label>直接下载</button>
+                        </form>
+                        <!--查询结果 start-->
+                        <div id="loading">
+                            <div id="searchResult" class="divider" style="display:none">
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>名称</th>
+                                        <th style="text-align: center;">描述</th>
+                                        <th>星级</th>
+                                        <th>官方</th>
+                                        <th>信赖</th>
+                                        <th>操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="result_body">
+
+                                    </tbody>
+                                </table>
+                                <nav aria-label="Page navigation">
+                                    <ul id="result_page" class="pagination">
+                                        <li value=1><a href="javascript:void(0)">1</a></li>
+                                        <li value=2><a href="javascript:void(0)">2</a></li>
+                                        <li value=3><a href="javascript:void(0)">3</a></li>
+                                        <li value=4><a href="javascript:void(0)">4</a></li>
+                                        <li value=5><a href="javascript:void(0)">5</a></li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                        <!--查询结果 end-->
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header"><h4>镜像</h4></div>
+                    <div class="card-body">
+
+                        <!--<button class="btn btn-label btn-danger" id="removeIbtn"><label><i class="mdi mdi-close"></i></label> 删除</button>-->
+                        <ul class="card-actions"><button id="refreshibtn"><i class="mdi mdi-refresh"></i></button></ul>
+                        <div class="divider"></div>
+                        <div class="table-responsive" id="ilist">
+                            <table class="table table-bordered" th:fragment="ilist">
+                                <thead>
+                                <tr>
+                                    <!--<th>
+                                        <label class="lyear-checkbox checkbox-primary">
+                                            <input type="checkbox" id="check-all"><span></span>
+                                        </label>
+                                    </th>-->
+                                    <th>#</th>
+                                    <th>镜像名称</th>
+                                    <th>镜像ID</th>
+                                    <th>创建时间</th>
+                                    <th>镜像大小</th>
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="image:${imagelist}">
+                                    <!--<td>
+                                        <label class="lyear-checkbox checkbox-primary">
+                                            <input type="checkbox" name="ids[]" th:value="${imageStat.index+1}"><span></span>
+                                        </label>
+                                    </td>-->
+                                    <td th:text="${imageStat.index+1}"></td>
+                                    <td><a th:href="'/imginfo/'+${image.getImageName()}"
+                                           th:text="${image.getImageName()}"></a></td>
+                                    <!--<td th:text="${image.getImageName()}"></td>-->
+                                    <td th:text="${image.getImageId()}"></td>
+                                    <td th:text="${image.getCreateTime()}"></td>
+                                    <td th:text="${image.getImageSize()}"></td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <input type="hidden" th:value="${image.getImageId()}">
+                                            <input type="hidden" th:value="${image.getImageName()}">
+                                            <span><a class="createC" th:href="'/createC?id='+${image.getImageId()}" title="" data-toggle="tooltip" data-original-title="创建容器"><i class="mdi mdi-pencil"></i></a></span>
+                                            <span><a class="removeI" href="javascript:;"><i class="mdi mdi-window-close"></i></a></span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <!--End 页面主要内容-->
+    </div>
+</div>
+<script type="text/javascript" src="/js/bootstrap-notify.min.js"></script>
+<script src="/js/jconfirm/jquery-confirm.min.js"></script>
+<!--这个导致消息通知不弹<script type="text/javascript" src="js/jquery.min.js"></script>-->
+<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/js/perfect-scrollbar.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+
+</body>
+</html>

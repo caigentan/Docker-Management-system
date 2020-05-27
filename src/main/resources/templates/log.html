@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+    <title>系统日志</title>
+    <link rel="icon" href="favicon.ico" type="image/ico">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <link href="/css/animate.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <link href="/css/full-search/jumbotron-narrow.css" rel="stylesheet">
+    <script src="/webjars/jquery/3.4.1/jquery.js"></script>
+    <script type="text/javascript" src="/js/lightyear.js"></script>
+    <script type="text/javascript" src="/js/full-search/anchor.js"></script>
+    <script type="text/javascript" src="/js/full-search/jquery.full-search.js"></script>
+    <script type="text/javascript" src="/js/bootstrap-notify.min.js"></script>
+    <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/js/perfect-scrollbar.min.js"></script>
+    <script type="text/javascript" src="/js/main.js"></script>
+    <script type="text/javascript" src="/customjs/linenumber.js"></script>
+    <script type="text/javascript">
+        $(function() {
+
+            $("#result-list").empty();
+            $.get("/getLog",
+                function (data, status) {
+                    $("#result-list").append(data);
+                }
+            )
+
+            $('#search').fullsearch({
+                highlight: true,
+                search_data: ".search-result",
+                search_title: ".result-section",
+                search_content: ".result-content",
+                list: "#result-list",
+                nodata: "未找到相关数据",
+            });
+
+        });
+    </script>
+</head>
+
+<body data-logobg="color_8" data-sidebarbg="color_8">
+<div class="lyear-layout-web">
+    <div class="lyear-layout-container">
+        <!--左侧导航-->
+        <div th:replace="common/bar::Lsidebar"></div>
+        <!--End 左侧导航-->
+        <!--头部信息-->
+        <div th:replace="common/bar::topbar"></div>
+        <!--End 头部信息-->
+
+        <!--页面主要内容-->
+        <main class="lyear-layout-content">
+
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header"><h4>日志信息</h4></div>
+                    <div class="card-body">
+                        <div class="search-result" style="display:none">
+                            <h4>标题</h4>
+                            <ul class="result-section">
+                                <li><a href="">dsfsdfsdf</a></li>
+                                <li><a href="">sdfsdf</a></li>
+                            </ul>
+                            <h4>内容</h4>
+                            <ul class="result-content">
+                                <li><a href="">sdfsdf</a></li>
+                                <li><a href="">sdfsd</a></li>
+                            </ul>
+                        </div>
+                        <div class="input-group m-b-10">
+                            <span class="input-group-addon" id="basic-addon1">搜索</span>
+                            <input type="search" class="form-control" id="search" placeholder="请输入本页面内容" aria-describedby="basic-addon1">
+                        </div><br>
+                        <div class="form-group row m-b-10">
+                            <div class="col-xs-3">自动刷新</div>
+                            <div class="col-xs-6">
+                                <label class="lyear-switch switch-solid switch-primary">
+                                    <input type="checkbox" checked="" id="autoRefresh">
+                                    <span></span>
+                                </label>
+                            </div>
+
+                        </div>
+                        <div class="form-group row m-b-10">
+                            <div id="result-list" class="input-group-text bg-lightest p-10" style="height:350px;overflow-y:auto;overflow-x: auto">
+
+                            </div>
+                        </div>
+                        <br>
+                        <!--<div  class="navbar-text" style="width: 100%;height: 273px;">
+
+                        </div>-->
+                    </div>
+                </div>
+            </div>
+        </main>
+        <!--End 页面主要内容-->
+    </div>
+</div>
+
+</body>
+</html>

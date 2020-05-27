@@ -1,0 +1,15 @@
+package com.caigen.graduationproject;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+
+@SpringBootApplication(exclude = SecurityAutoConfiguration.class)
+public class GraduationprojectApplication {
+
+    public static void main(String[] args) {
+
+        SpringApplication.run(GraduationprojectApplication.class, args);
+    }
+
+}

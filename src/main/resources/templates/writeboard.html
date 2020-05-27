@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>用户留言</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <link href="/css/animate.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/toastr.js/2.1.4/toastr.min.css" rel="stylesheet">
+    <link href="css/writeboard.css" rel="stylesheet">
+    <script type="text/javascript" src="/webjars/jquery/3.4.1/jquery.js"></script>
+    <script type="text/javascript" src="/js/lightyear.js"></script>
+    <script src="https://cdn.bootcss.com/toastr.js/2.1.4/toastr.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $("#pagetitle").text("用户留言")
+            $("a.remove").click(function () {
+                console.log($(this).siblings("input").val());
+                $(this).parent().css("display", "none");
+                $.ajax({
+                    url:"/delMessage",
+                    type:"post",
+                    traditional:"true",
+                    data:{
+                        id: $(this).siblings("input").val()
+                    },
+                    datatype:"text",
+                    success:function (data) {
+
+                        lightyear.notify("已删除","success",100);
+                    }
+                })
+
+            })
+        });
+    </script>
+</head>
+<body data-logobg="color_8" data-sidebarbg="color_8">
+<div class="lyear-layout-web">
+    <div class="lyear-layout-container">
+        <!--左侧导航-->
+        <div th:replace="common/bar::Lsidebar"></div>
+        <!--End 左侧导航-->
+        <!--头部信息-->
+        <div th:replace="common/bar::topbar"></div>
+        <!--End 头部信息-->
+
+        <!--页面主要内容-->
+        <main class="lyear-layout-content">
+
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-header"><h4>反馈</h4></div>
+                            <div class="card-body">
+                                <div id="box" class="bg-lightest p-10 form-control">
+                                    <ul id="uls" th:each="message:${messages}">
+                                        <li style="display: block">
+                                            <input th:value="${message.getId()}" type="hidden">
+                                            <div class="username" th:text="${message.getTitle()}+' by '+${message.getUserName()}"></div>
+                                            <a href="javascript:;" class="delet remove"><i class="mdi mdi-delete"></i></a>
+                                            <p th:text="${message.getMessage()}"></p>
+                                            <p style="text-align: right;" th:text="${message.getCreateTime()}">2020-12-12</p>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </main>
+        <!--End 页面主要内容-->
+    </div>
+</div>
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/perfect-scrollbar.min.js"></script>
+<script src="js/jquery-tags-input/jquery.tagsinput.min.js"></script>
+<script type="text/javascript" src="js/main.js"></script>
+<script type="text/javascript" src="/js/bootstrap-notify.min.js"></script>
+<!--<script type="text/javascript" src="js/writeboard.js"></script>-->
+<script type="text/javascript">
+    //锁定滚动条
+    function unScroll(){
+        var top=$(document).scrollTop();
+        $(document).on('scroll.unable',function (e){
+            $(document).scrollTop(top);
+        })
+    };
+    //打开滚动条
+    function removeUnScroll(){
+        $(document).unbind("scroll.unable");
+    };
+
+    $('btn').onclick = function () {
+        unScroll();
+    };
+    $('close').onclick = function () {
+        removeUnScroll();
+        Popup.show();
+    };
+    $('btn3').onclick = function () {
+        removeUnScroll();
+        Popup.show();
+    };
+</script>
+
+</body>
+</html>

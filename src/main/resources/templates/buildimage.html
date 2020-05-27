@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+    <title>创建容器</title>
+    <link rel="icon" href="favicon.ico" type="image/ico">
+
+    <meta name="author" content="yinqi">
+    <script src="/js/fileinput/jquery-2.0.3.min.js"></script>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/fileinput/fileinput.css" media="all" rel="stylesheet" type="text/css" />
+    <link href="/css/materialdesignicons.min.css" rel="stylesheet">
+    <script type="text/javascript" src="/js/lightyear.js"></script>
+    <script type="text/javascript" src="js/perfect-scrollbar.min.js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
+    <!--<script src="js/jquery.min.js"></script>-->
+    <script src="/js/fileinput/bootstrap.min.js" type="text/javascript"></script>
+    <script src="js/fileinput/fileinput.js" type="text/javascript"></script>
+    <script>
+        $(function () {
+            $("[data-toggle='tooltip']").tooltip();
+
+            $("#buildImage").click(function () {
+
+                if($("#tag").val()=="" || $("#dockerfile_content").val()==""){
+                    lightyear.notify('tag标签或Dockerfile文本内容均不可为空 ', 'danger', 100);
+                }else {
+                    $("#buildImage").attr("disabled",true);
+                    $.ajax({
+                        url: "/buildImageByDockerfile",
+                        type: "post",
+                        traditional: true,
+                        data: {
+                            dockerfile: $("#dockerfile_content").val(),
+                            tag: $("#tag").val()
+                        },
+                        dataType: "text",
+                        success: function (data) {
+                            lightyear.notify('创建成功，可至输出栏查看详情', 'success', 100);
+                            $("#buildImage").attr("disabled", false);
+                            $("#putResult").text(data);
+                        },
+                        error: function () {
+                            lightyear.notify('Dockerfile语法错误，请检查', 'danger', 100);
+                        }
+                    })
+                }
+            })
+        })
+    </script>
+</head>
+
+<body data-logobg="color_8" data-sidebarbg="color_8">
+<div class="lyear-layout-web">
+    <div class="lyear-layout-container">
+        <!--左侧导航-->
+        <div th:replace="common/bar::Lsidebar"></div>
+        <!--End 左侧导航-->
+        <!--头部信息-->
+        <div th:replace="common/bar::topbar"></div>
+        <!--End 头部信息-->
+
+        <!--页面主要内容-->
+        <main class="lyear-layout-content">
+
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header"><h4>基本信息</h4></div>
+                    <div class="card-body">
+                        <ul id="Tabs" class="nav nav-tabs" role="tablist">
+                            <li class="active"><a href="#home" id="build" role="tab" data-toggle="tab">创建</a></li>
+                            <li><a href="#profile" role="tab" id="output" data-toggle="tab">输出</a></li>
+                        </ul>
+                        <div id="TabContent" class="tab-content">
+                            <div class="tab-pane fade active in" id="home">
+                                <div class="card">
+                                    <div >名称：标签</div>
+                                    <hr style="border-top:1px dashed #987cb9;" width="100%" color="#987cb9" size=1>
+                                    <div>
+                                        <span>命名</span><br>
+                                        <font class="text-muted">名称必须采用以下格式之一指定</font><font class="text-danger">class="text-danger">name:tag，repository/name:tag或registryfqdn:port/repository/name:tag</font> <font class="text-muted">格式。如果省略标签，则采用默认的最新值。</font><font class="text-success">latest</font>
+                                        <hr style="border-top:1px dashed #987cb9;" width="100%" color="#987cb9" size=1>
+                                        <div class="input-group m-b-10">
+                                            <span class="input-group-addon">名称:标签</span>
+                                            <input type="text" id="tag" class="form-control" placeholder="e.g:name:tag" aria-describedby="sizing-addon2">
+                                        </div>
+                                        <br>
+                                        <p>建立方法</p>
+                                        <hr style="border-top:1px dashed #987cb9;" width="100%" color="#987cb9" size=1>
+
+                                        <ul id="myTabs" class="nav nav-tabs" role="tablist">
+                                            <li class="active"><a href="#webedit" id="webedit-tab" role="tab" data-toggle="tab">下方输入框输入</a></li>
+                                            <li style="display: none"><a href="#localup" role="tab" id="localup-tab" data-toggle="tab">本地上传</a></li>
+                                            <li style="display: none"><a href="#fromother" id="fromother-tab" role="tab" data-toggle="tab">其他网站资源</a></li>
+                                        </ul>
+                                        <div id="myTabContent" class="tab-content">
+                                            <div class="tab-pane fade active in" id="webedit">
+                                                <p>请在下方输入框复制您的Dockerfile内容</p>
+                                                <p><a href="https://docs.docker.com/engine/reference/builder/">点击此</a>了解关于Dockerfile的官方内容</p>
+                                                <textarea class="form-control" id="dockerfile_content" name="deblock_udid" rows="16" style="min-width: 90%"></textarea>
+                                            </div>
+                                            <div class="tab-pane fade" id="localup">
+                                                <label class="col-xs-12">本地上传</label>
+                                                <div class="pull-left col-sm-12 col-md-6"  style="width:460px;">
+                                                    <form enctype="multipart/form-data" action="/dockerfileUpload">
+                                                        <div class="form-group">
+                                                            <input type="file" id="uploadfile" name="dockerfile" class="file" style="width:190px;" multiple="multiple"/>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane fade" id="fromother">
+                                                <p></p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="profile">
+                                <textarea id="putResult" style="width: 770px;height: 400px;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-success" id="buildImage">提交</button>
+                </div>
+            </div>
+        </main>
+        <!--End 页面主要内容-->
+    </div>
+</div>
+<script type="text/javascript" src="/js/bootstrap-notify.min.js"></script>
+</body>
+</html>

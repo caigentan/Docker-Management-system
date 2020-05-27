@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://ww.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+    <title>状态信息</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <link href="/css/animate.css" rel="stylesheet">
+    <script src="/webjars/jquery/3.4.1/jquery.js"></script>
+    <script type="text/javascript" src="/js/lightyear.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            /*var cpuState = [0, 0, 0, 0, 0, 0];
+            var memoryState = [0, 0, 0, 0, 0, 0];
+            var i = 0;
+            setInterval(function () {
+                $.ajax({
+                    url: '/StatusWithChart',
+                    type: "get",
+                    data: {
+                        id: $("#containerId").text()
+                    },
+                    traditional: true,
+                    dataType: "json",
+                    success: function (data) {
+                        cpuState[i % 6] = data[0]*1.0/100.0;
+                        memoryState[i % 6] =data[1];
+                        i++;
+                        //alert(cpuState);
+                        var ctx = document.getElementById('cpuChart');
+                        var myChart = new Chart(ctx, {
+                            type: 'line',
+                            yAxes: false,
+                            data: {
+                                labels: ['1', '2', '3', '4', '5', '6'],
+                                datasets: [{
+                                    label: 'CPU使用',
+                                    data: cpuState,
+                                    backgroundColor: [
+                                        'rgba(255, 99, 132, 0.2)',
+                                        'rgba(54, 162, 235, 0.2)',
+                                        'rgba(255, 206, 86, 0.2)',
+                                        'rgba(75, 192, 192, 0.2)',
+                                        'rgba(153, 102, 255, 0.2)',
+                                        'rgba(255, 159, 64, 0.2)'
+                                    ],
+                                    borderColor: [
+                                        'rgba(255, 99, 132, 1)',
+                                        'rgba(54, 162, 235, 1)',
+                                        'rgba(255, 206, 86, 1)',
+                                        'rgba(75, 192, 192, 1)',
+                                        'rgba(153, 102, 255, 1)',
+                                        'rgba(255, 159, 64, 1)'
+                                    ],
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                scales: {
+                                    yAxes: [{
+                                        ticks: {
+                                            beginAtZero: true
+                                        }
+                                    }]
+                                }
+                            }
+                        });
+                        var ctx = document.getElementById('memoryChart');
+                        var myChart = new Chart(ctx, {
+                            type: 'line',
+                            yAxes: false,
+                            data: {
+                                labels: ['1', '2', '3', '4', '5', '6'],
+                                datasets: [{
+                                    label: '内存使用',
+                                    data: memoryState,
+                                    backgroundColor: [
+                                        'rgba(255, 99, 132, 0.2)',
+                                        'rgba(54, 162, 235, 0.2)',
+                                        'rgba(255, 206, 86, 0.2)',
+                                        'rgba(75, 192, 192, 0.2)',
+                                        'rgba(153, 102, 255, 0.2)',
+                                        'rgba(255, 159, 64, 0.2)'
+                                    ],
+                                    borderColor: [
+                                        'rgba(255, 99, 132, 1)',
+                                        'rgba(54, 162, 235, 1)',
+                                        'rgba(255, 206, 86, 1)',
+                                        'rgba(75, 192, 192, 1)',
+                                        'rgba(153, 102, 255, 1)',
+                                        'rgba(255, 159, 64, 1)'
+                                    ],
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                scales: {
+                                    yAxes: [{
+                                        ticks: {
+                                            beginAtZero: true
+                                        }
+                                    }]
+                                }
+                            }
+                        });
+
+                    },
+                    error: function (data) {
+                        lightyear.notify("请求过于频繁，请调低请求频率", "danger", 100);
+                    },
+                });
+            },2000)*/
+
+        })
+    </script>
+</head>
+
+<body data-logobg="color_8" data-sidebarbg="color_8">
+<div class="lyear-layout-web">
+    <div class="lyear-layout-container">
+        <!--左侧导航-->
+        <div th:replace="common/bar::Lsidebar"></div>
+        <!--End 左侧导航-->
+        <!--头部信息-->
+        <div th:replace="common/bar::topbar"></div>
+        <!--End 头部信息-->
+        <!--页面主要内容-->
+        <main class="lyear-layout-content">
+
+            <div class="container-fluid">
+
+                <div class="row">
+                    <div class="col-lg-12">
+
+                            <div class="col-lg-6" style="width: 250px">
+                                <canvas id="cpuChart" style="height: 50px" width="50" height="50">
+
+                                </canvas>
+                            </div>
+                            <div class="col-lg-6" style="width: 250px">
+                                <canvas id="memoryChart" style="height: 50px" width="50" height="50">
+
+                                </canvas>
+                            </div>
+                        <div class="card">
+                            <div class="card-header"><h4>容器状态</h4></div>
+                            <div class="card-body">
+                                <table class="table">
+                                    <tbody>
+                                    <tr class="active">
+                                        <th scope="row">ID</th>
+                                        <td id="containerId" th:text="${status['id']}"></td>
+                                        
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">名称</th>
+                                        <td th:text="${status['name']}"><span><a href=""><i class="mdi mdi-pencil"></i></a></span>
+                                        </td>
+                                    </tr>
+                                    <tr class="success">
+                                        <th scope="row">状态</th>
+                                        <td th:text="${status['stus']}"></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">创建时间</th>
+                                        <td th:text="${status['created']}"></td>
+                                    </tr>
+                                    <tr class="active">
+                                        <th scope="row">母体镜像</th>
+                                        <td th:text="${status['image']}"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <div class="btn-group">
+                                    <span style="margin-right: 10px;"><a
+                                            th:href="'/container/'+${status['id']}+'/inspect'"><i
+                                            class="mdi mdi-information">详细</i></a></span>
+                                    <span style="margin-right: 10px;"><a th:href="'/startC?id='+${status['id']}"><i
+                                            class="mdi mdi-pencil">启动</i></a></span>
+                                    <span style="margin-right: 10px;"><a th:href="'/removeC?id='+${status['id']}"><i
+                                            class="mdi mdi-window-close">删除</i></a></span>
+                                    <span style="margin-right: 10px;"><a th:href="'/containerLog/'+${status['id']}"><i
+                                            class="mdi mdi-note-text">日志</i></a></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-header"><h4>细节信息</h4></div>
+                            <div class="card-body">
+                                <table class="table">
+                                    <tbody>
+                                    <tr class="active">
+                                        <th scope="row">路径</th>
+                                        <td th:text="${details['path']}"></td>
+                                        
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">CMD</th>
+                                        <td th:text="${details['cmd']}"></td>
+                                    </tr>
+                                    <tr class="success">
+                                        <th scope="row">ENTRYPOINT</th>
+                                        <td th:text="${details['entrypoint']}"></td>
+                                    </tr>
+
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+                        <!-- .row -->
+                    </div>
+                </div>
+            </div>
+        </main>
+        <!--End 页面主要内容-->
+    </div>
+</div>
+
+<script type="text/javascript" src="/js/bootstrap-notify.min.js"></script>
+<!--这个导致消息通知不弹<script type="text/javascript" src="js/jquery.min.js"></script>-->
+<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/js/perfect-scrollbar.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<script type="text/javascript">
+
+</script>
+</body>
+</html>

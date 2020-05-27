@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>个人信息</title>
+    <link rel="icon" href="favicon.ico" type="image/ico">
+    <meta name="author" content="yinqi">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <style type="text/css">
+
+        .t_img {
+            width: 75px;
+            height: 75px;
+            border-radius: 100%;
+        }
+
+        .s_box {
+            border-radius: 10px;
+            width: 500px;
+            height: auto;
+            border: 1px #c2c2d6 solid;
+            margin-left: 430px;
+            background-color: #c2c2d6;
+            position: fixed;
+            display: none;
+        }
+
+        .s_box img {
+            width: 61px;
+            height: 61px;
+            margin: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .s_box img:hover {
+            border-color: red;
+            transform: scale(1.25);
+            transition: .5s;
+        }
+
+        .header {
+            width: 100%;
+            text-align: center;
+            font-size: 14px;
+            margin-top: 30px;
+        }
+
+        .close {
+            color: #000;
+            font-size: 21px;
+            opacity: .7;
+            position: absolute;
+            right: 8px;
+            top: 1px;
+            cursor: pointer;
+        }
+
+        .bt_box .gb {
+            display: inline-block;
+            width: 80px;
+            height: 35px;
+            border-radius: 10px;
+            background: #f3f3f3;
+            color: #444;
+            line-height: 35px;
+            margin: 10px;
+        }
+
+        .bt_box .queren {
+            display: inline-block;
+            width: 80px;
+            height: 35px;
+            border-radius: 10px;
+            background: #1a53ff;
+            color: white;
+            line-height: 35px;
+        }
+
+        .bt_box .gb:hover, .bt_box .queren:hover {
+            box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.24), 0 9px 25px 0 rgba(0, 0, 0, 0.19);
+        }
+
+    </style>
+</head>
+<body>
+<div class="lyear-layout-web">
+    <div class="lyear-layout-container">
+        <!--左侧导航-->
+        <div th:replace="common/bar::Lsidebar"></div>
+        <!--End 左侧导航-->
+        <!--头部信息-->
+        <div th:replace="common/bar::topbar"></div>
+        <!--End 头部信息-->
+
+        <!--页面主要内容-->
+        <main class="lyear-layout-content">
+
+
+            <div class="container-fluid">
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="s_box" id="sbox">
+                                    <div class="header">
+                                        <p>设置头像</p>
+                                        <span class="close" id="close">x</span>
+                                    </div>
+                                    <hr width="80%" color="#e0e0eb"/>
+                                    <div id="t_img">
+                                        <img src="/images/users/avatar.jpg" name="avatar.jpg"/>
+                                        <img src="/images/users/01.png" name="01.png"/>
+                                        <img src="/images/users/02.png" name="02.png"/>
+                                        <img src="/images/users/03.png" name="03.png"/>
+                                        <img src="/images/users/04.png" name="04.png"/>
+                                        <img src="/images/users/05.png" name="05.png"/>
+                                        <img src="/images/users/06.png" name="06.png"/>
+                                        <img src="/images/users/07.png" name="07.png"/>
+                                    </div>
+                                    <hr width="80%" color="#e0e0eb"/>
+                                    <div class="bt_box">
+                                        <a class="gb" href="javascript:" id="hide">关闭</a>
+                                        <a class="queren" href="javascript:" id="but">保存头像</a>
+                                    </div>
+                                </div>
+                                <div class="edit-avatar">
+                                    <img th:src="'/images/users/'+${userInfo.getImg()}" alt="..." id="main_img"
+                                         class="img-avatar t_img" th:name="${userInfo.getImg()}">
+                                    <div class="avatar-divider"></div>
+                                    <!--头像库 start-->
+
+                                    <!--头像库 end-->
+                                    <div class="edit-avatar-content">
+                                        <button class="btn btn-default" id="change_img">修改头像</button>
+                                    </div>
+                                </div>
+                                <hr>
+                                <form method="post" action="/saveUserinfo" class="site-form">
+                                    <div class="form-group">
+                                        <label for="userName">用户名</label>
+                                        <input style="display: none" name="userName" id="userName"
+                                               th:value="${session.SPRING_SECURITY_CONTEXT.authentication.principal.username}"/>
+                                        <input type="text" class="form-control"
+                                               th:value="${session.SPRING_SECURITY_CONTEXT.authentication.principal.username}" disabled="disabled"/>
+                                    </div>
+                                    <input style="display: none;" name="img" id="form_img"/>
+
+                                    <div class="form-group">
+                                        <label for="email">邮箱</label>
+                                        <input type="email" class="form-control" name="email" id="email"
+                                               aria-describedby="emailHelp" placeholder="请输入正确的邮箱地址"
+                                               th:value="${userInfo.getEmail()}">
+                                        <small id="emailHelp" class="form-text text-muted">请保证您填写的邮箱地址是正确的。</small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="profile">简介</label>
+                                        <textarea class="form-control" name="profile" id="profile" rows="3" th:text="${userInfo.getProfile()}"></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">保存</button>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <!--End 页面主要内容-->
+    </div>
+</div>
+
+<script type="text/javascript" src="/js/jquery.min.js"></script>
+<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/js/perfect-scrollbar.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+<script type="text/javascript">
+    $(function () {
+        /* 隐藏，显现效果 */
+        $("#change_img").click(function () {
+            $("#sbox").show("slow");
+        });
+        $("#hide").click(function () {
+            $("#sbox").hide("slow");
+        });
+        $("#close").click(function () {
+            $("#sbox").hide("slow");
+        });
+        /*  选定图像获取图像src值 */
+        var $t_img = document.getElementById('t_img');
+        var $img = $t_img.getElementsByTagName('img');
+        var index = 0;
+        for (var i = 0; i < $img.length; i++) {
+            $img[i].index = i;
+            $img[i].onclick = function () {
+                $img[index].style.borderRadius = "15%";
+                $img[index].style.border = "none"
+                this.style.borderRadius = "50%";
+                this.style.border = "1px solid red"
+                index = this.index;
+                var $newsrc = $img[index].src;
+                var $newname = $img[index].name;
+                $(".t_img").attr('src', $newsrc);
+                $("#form_img").val($newname);
+                $(".t_img").attr('name', $newname);
+            }
+        }
+        //点击确认修改按钮更换头像
+        $("#but").click(function () {
+            $("#sbox").hide("slow");
+            alert($("#main_img").attr('name'));
+        })
+
+        //讲选中的图片替换头像的图片
+        $("#file0").change(function () {
+            var objUrl = getObjectURL(this.files[0]);
+            if (objUrl) {
+                $(".t_img").attr("src", objUrl);
+            }
+        });
+
+        //创建一个可存取到该file的url
+        function getObjectURL(file) {
+            var url = null;
+            // 下面函数执行的效果是一样的，只是需要针对不同的浏览器执行不同的 js 函数而已
+            if (window.createObjectURL != undefined) { // basic
+                url = window.createObjectURL(file);
+            } else if (window.URL != undefined) { // mozilla(firefox)
+                url = window.URL.createObjectURL(file);
+            } else if (window.webkitURL != undefined) { // webkit or chrome
+                url = window.webkitURL.createObjectURL(file);
+            }
+            return url;
+        }
+    })
+</script>
+</body>
+</html>

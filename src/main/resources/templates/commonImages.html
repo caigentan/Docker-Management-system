@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+    <title>新增文档 - bootstrap中文后台管理系统模板</title>
+    <link rel="icon" href="favicon.ico" type="image/ico">
+
+    <meta name="author" content="yinqi">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/toastr.js/2.1.4/toastr.min.css" rel="stylesheet">
+    <link href="css/card.css" rel="stylesheet">
+    <script type="text/javascript" src="/webjars/jquery/3.4.1/jquery.js"></script>
+    <script type="text/javascript" src="/js/lightyear.js"></script>
+    <script src="https://cdn.bootcss.com/toastr.js/2.1.4/toastr.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $("a.downImage").click(function () {
+                lightyear.notify("下载中，时长取决于你的网速~~~","success",100);
+                $.ajax({
+                    url:"/downComImage",
+                    type:"post",
+                    data:{
+                        imageName:$(this).siblings("input").val()
+                    },
+                    dataType: "text",
+                    success:function (data) {
+                        lightyear.notify("Well~~下载成功","success",100);
+                    },
+                    error:function (data) {
+                        lightyear.notify("服务器错误，若重复出现请移步反馈区反馈","danger",100);
+                    }
+                })
+            })
+        })
+    </script>
+</head>
+
+<body data-logobg="color_8" data-sidebarbg="color_8">
+<div class="lyear-layout-web">
+    <div class="lyear-layout-container">
+        <!--左侧导航-->
+        <div th:replace="common/bar::Lsidebar"></div>
+        <!--End 左侧导航-->
+        <!--头部信息-->
+        <div th:replace="common/bar::topbar"></div>
+        <!--End 头部信息-->
+
+        <!--页面主要内容-->
+        <main class="lyear-layout-content">
+
+            <div class="container-fluid">
+                <!-- effect-4 html -->
+                <div class="single-member effect-4" th:each="image:${images}">
+                    <div class="member-info">
+                        <h3 th:text="${image.getImageName()}">Sophia</h3>
+                    </div>
+                    <div class="member-image">
+                        <img src="/images/icon.png" alt="Member">
+                    </div>
+                    <div class="more-info">
+                        <p th:text="${image.getImageInfo()}"></p>
+                        <div style="text-align: center;">
+                            <input th:value="${image.getImageName()}" type="hidden">
+                            <a class="downImage" href="javascript:;"><i class="mdi mdi-download" style="font-size: 50px"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <!-- effect-4 html end -->
+            </div>
+
+        </main>
+        <!--End 页面主要内容-->
+    </div>
+</div>
+
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/perfect-scrollbar.min.js"></script>
+<!--标签插件-->
+<script src="js/jquery-tags-input/jquery.tagsinput.min.js"></script>
+<script type="text/javascript" src="js/main.js"></script>
+<script type="text/javascript" src="/js/bootstrap-notify.min.js"></script>
+</body>
+</html>
